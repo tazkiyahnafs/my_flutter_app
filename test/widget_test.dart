@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ta3/main.dart';
 
 void main() {
-  testWidgets('app opens the drink menu after the splash screen', (
+  testWidgets('user can register, log in, and use the drink menu', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(const MyApp());
@@ -21,6 +21,48 @@ void main() {
     await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
 
+    expect(find.text('Selamat Datang'), findsOneWidget);
+    await tester.tap(find.text('Belum punya akun? Daftar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Daftar Akun Baru'), findsOneWidget);
+    await tester.ensureVisible(find.text('Daftar'));
+    await tester.tap(find.text('Daftar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nama tidak boleh kosong.'), findsOneWidget);
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Nama Lengkap'),
+      'Tazkiyah',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Email'),
+      'tazkiyah@example.com',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Nomor HP'),
+      '081234567890',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Password'),
+      'rahasia123',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Konfirmasi Password'),
+      'rahasia123',
+    );
+    await tester.ensureVisible(find.text('Daftar'));
+    await tester.tap(find.text('Daftar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Selamat Datang'), findsOneWidget);
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Password'),
+      'rahasia123',
+    );
+    await tester.tap(find.text('Masuk'));
+    await tester.pumpAndSettle();
+
     expect(find.text('Warung IS - Menu'), findsOneWidget);
     expect(find.text('Espresso'), findsOneWidget);
 
@@ -32,6 +74,7 @@ void main() {
     expect(find.text('Nama Pemesan'), findsOneWidget);
     expect(find.text('Nomor Meja'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('Checkout'));
     await tester.tap(find.text('Checkout'));
     await tester.pumpAndSettle();
     expect(find.text('Nama Pemesan tidak boleh kosong.'), findsOneWidget);
@@ -40,18 +83,21 @@ void main() {
 
     await tester.enterText(find.byType(TextFormField).first, 'Tazkiyah');
     await tester.enterText(find.byType(TextFormField).last, 'abc');
+    await tester.ensureVisible(find.text('Checkout'));
     await tester.tap(find.text('Checkout'));
     await tester.pumpAndSettle();
     expect(find.text('Nomor Meja harus berupa angka.'), findsOneWidget);
     expect(find.text('Checkout Berhasil'), findsNothing);
 
     await tester.enterText(find.byType(TextFormField).last, '21');
+    await tester.ensureVisible(find.text('Checkout'));
     await tester.tap(find.text('Checkout'));
     await tester.pumpAndSettle();
     expect(find.text('Nomor Meja harus antara 1-20.'), findsOneWidget);
     expect(find.text('Checkout Berhasil'), findsNothing);
 
     await tester.enterText(find.byType(TextFormField).last, '1');
+    await tester.ensureVisible(find.text('Checkout'));
     await tester.tap(find.text('Checkout'));
     await tester.pumpAndSettle();
     expect(find.text('Checkout Berhasil'), findsOneWidget);
